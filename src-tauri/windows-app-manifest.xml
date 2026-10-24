@@ -1,0 +1,37 @@
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0" xmlns:asmv3="urn:schemas-microsoft-com:asm.v3">
+  <dependency>
+    <dependentAssembly>
+      <assemblyIdentity
+        type="win32"
+        name="Microsoft.Windows.Common-Controls"
+        version="6.0.0.0"
+        processorArchitecture="*"
+        publicKeyToken="6595b64144ccf1df"
+        language="*"
+      />
+    </dependentAssembly>
+  </dependency>
+  <!--
+    Tauri's own default manifest (windows-app-manifest.xml in the installed
+    tauri-build crate) has no DPI-awareness declaration at all, which
+    leaves the app in the legacy DPI-unaware compatibility mode: Windows
+    bitmap-stretches the entire process (every window, and the taskbar
+    icon) to fill the real display instead of rendering natively at the
+    monitor's actual DPI. Confirmed live on a 200%-scaled display
+    (AppliedDPI 192 vs. the 96 a DPI-unaware process reports) — this,
+    not the icon file itself, was the cause of a blurry taskbar icon;
+    verified the icon's own pixel data and .ico structure were both
+    correct via two independent generators before finding this. Both the
+    legacy (2005 namespace) and current (2016 namespace) declarations are
+    included, matching Microsoft's own documented pattern, so this also
+    works on older Windows versions that don't support PerMonitorV2.
+  -->
+  <asmv3:application>
+    <asmv3:windowsSettings xmlns="http://schemas.microsoft.com/SMI/2005/WindowsSettings">
+      <dpiAware>true/PM</dpiAware>
+    </asmv3:windowsSettings>
+    <asmv3:windowsSettings xmlns="http://schemas.microsoft.com/SMI/2016/WindowsSettings">
+      <dpiAwareness>PerMonitorV2</dpiAwareness>
+    </asmv3:windowsSettings>
+  </asmv3:application>
+</assembly>

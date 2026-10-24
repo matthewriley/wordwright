@@ -1,0 +1,40 @@
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  background: var(--ww-color-chrome-bg);
+  color: var(--ww-color-chrome-text);
+}
+
+/*
+ * App-level layout, matching the original design's structure: full-width
+ * chrome rows (toolbar here; tab strip/status bar are later milestones)
+ * stacked above a scrollable area that centers the fixed-width editing
+ * column. Only the editor content area is width-constrained.
+ */
+.app {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--ww-color-chrome-surface);
+}
+
+.app-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  background: var(--ww-color-chrome-surface);
+  display: flex;
+  justify-content: center;
+}
+
+.app-page {
+  width: 100%;
+  max-width: 900px;
+  background: var(--ww-color-chrome-surface);
+}

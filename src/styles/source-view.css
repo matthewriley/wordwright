@@ -1,0 +1,22 @@
+/*
+ * Ported from design/Wordwright.dc.html's source-mode textarea. Uses
+ * chrome (not doc-surface) text color deliberately — the source view
+ * reads as a chrome-adjacent tool, not part of the GitHub-styled prose.
+ */
+
+.source-view {
+  display: block;
+  width: 100%;
+  min-height: 100%;
+  box-sizing: border-box;
+  border: none;
+  outline: none;
+  resize: none;
+  overflow: hidden;
+  padding: var(--ww-space-2xl) var(--ww-space-3xl);
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-size: var(--ww-font-size-md);
+  line-height: 1.7;
+  color: var(--ww-color-chrome-text);
+  background: var(--ww-color-chrome-surface);
+}

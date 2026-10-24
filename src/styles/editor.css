@@ -1,0 +1,165 @@
+/*
+ * Ported from design/Wordwright.dc.html's #doc block, replacing raw hex
+ * with the doc-surface tokens from tokens.css. Extended with h5/h6 (the
+ * original design never styled beyond h4) and task-list/table rules
+ * adapted to ProseMirror's actual rendered DOM shape.
+ */
+
+#doc {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+  font-size: var(--ww-font-size-xl);
+  line-height: 1.6;
+  color: var(--ww-color-doc-text);
+  outline: none;
+  padding: var(--ww-space-2xl) var(--ww-space-3xl);
+  min-height: 100%;
+}
+#doc > *:first-child {
+  margin-top: 0;
+}
+#doc h1, #doc h2, #doc h3, #doc h4, #doc h5, #doc h6 {
+  font-weight: 600;
+  line-height: 1.25;
+  margin: 24px 0 16px;
+}
+#doc h1 {
+  font-size: 2em;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid var(--ww-color-doc-border);
+}
+#doc h2 {
+  font-size: 1.5em;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid var(--ww-color-doc-border);
+}
+#doc h3 {
+  font-size: 1.25em;
+}
+#doc h4 {
+  font-size: 1em;
+}
+#doc h5 {
+  font-size: 0.875em;
+  color: var(--ww-color-doc-text-muted);
+}
+#doc h6 {
+  font-size: 0.85em;
+  color: var(--ww-color-doc-text-muted);
+}
+#doc p, #doc ul, #doc ol, #doc blockquote, #doc pre, #doc table {
+  margin: 0 0 16px;
+}
+#doc ul, #doc ol {
+  padding-left: 2em;
+}
+#doc li + li {
+  margin-top: 0.25em;
+}
+
+#doc ul[data-task-list] {
+  list-style: none;
+  padding-left: 0;
+}
+#doc li[data-task] {
+  display: flex;
+  align-items: baseline;
+  gap: var(--ww-space-sm);
+}
+#doc li[data-task] input[type="checkbox"] {
+  margin: 0;
+  transform: translateY(1px);
+  flex: none;
+  cursor: pointer;
+}
+#doc li[data-task] .task-item-content {
+  flex: 1;
+  min-width: 0;
+}
+#doc li[data-task] .task-item-content > p:first-child {
+  margin-top: 0;
+}
+#doc li[data-task] .task-item-content > *:last-child {
+  margin-bottom: 0;
+}
+
+#doc blockquote {
+  padding: 0 1em;
+  color: var(--ww-color-doc-text-muted);
+  border-left: 0.25em solid var(--ww-color-doc-border);
+}
+#doc code {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 85%;
+  background: var(--ww-color-doc-code-inline-bg);
+  padding: 0.2em 0.4em;
+  border-radius: var(--ww-radius-lg);
+}
+#doc pre {
+  background: var(--ww-color-doc-surface-muted);
+  padding: 16px;
+  border-radius: var(--ww-radius-lg);
+  overflow: auto;
+}
+#doc pre code {
+  background: none;
+  padding: 0;
+  font-size: 100%;
+}
+#doc table {
+  border-collapse: collapse;
+  display: block;
+  width: max-content;
+  max-width: 100%;
+}
+#doc th, #doc td {
+  border: 1px solid var(--ww-color-doc-border);
+  padding: 6px 13px;
+}
+#doc th {
+  background: var(--ww-color-doc-surface-muted);
+  font-weight: 600;
+}
+/*
+ * Overrides for prosemirror-tables/style/tables.css (imported in
+ * Editor.tsx) — that stylesheet supplies the column-resize handle and
+ * multi-cell selection highlight, neither of which had any styling before
+ * (both real, pre-existing gaps: tableEditing()/columnResizing() were
+ * already active, just invisible). Its own colors (#adf handle,
+ * rgba(200,200,255,0.4) selection tint) don't match our tokens, so they're
+ * replaced here; #doc-scoped selectors win over its .ProseMirror-scoped
+ * ones regardless of import order (ID beats class). Its table-layout/width
+ * rules are left alone — they lose to our own #doc table rule above for
+ * the same specificity reason, so sizing is unaffected.
+ */
+#doc {
+  --default-cell-min-width: 25px;
+}
+#doc .column-resize-handle {
+  background-color: var(--ww-color-accent);
+}
+#doc .selectedCell::after {
+  background: var(--ww-color-accent-soft);
+}
+#doc hr {
+  height: 0.25em;
+  background: var(--ww-color-doc-border);
+  border: 0;
+  margin: 24px 0;
+}
+#doc a {
+  color: var(--ww-color-doc-link);
+  text-decoration: none;
+}
+#doc a:hover {
+  text-decoration: underline;
+}
+
+/* Find/replace decorations (find-replace-plugin.ts) */
+#doc .find-match {
+  background: var(--ww-color-accent-soft);
+  border-radius: var(--ww-radius-sm);
+}
+#doc .find-match-active {
+  background: var(--ww-color-accent);
+  color: white;
+}

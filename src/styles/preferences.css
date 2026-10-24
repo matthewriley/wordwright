@@ -1,0 +1,74 @@
+/*
+ * Preferences modal. Reuses .link-modal's border/radius/shadow/backdrop
+ * (toolbar.css) rather than inventing new modal chrome — .preferences-modal
+ * only adds the layout specific to this panel's content.
+ */
+.preferences-modal {
+  min-width: 280px;
+}
+
+.preferences-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ww-space-sm2);
+  margin-bottom: var(--ww-space-lg);
+}
+
+.preferences-label {
+  font-size: var(--ww-font-size-xs);
+  color: var(--ww-color-chrome-text-muted);
+}
+
+.preferences-theme-options {
+  display: flex;
+  gap: var(--ww-space-xs);
+}
+
+.preferences-theme-option {
+  flex: 1;
+  font: inherit;
+  font-size: var(--ww-font-size-sm);
+  padding: var(--ww-space-sm) var(--ww-space-sm2);
+  border: 1px solid var(--ww-color-chrome-border-strong);
+  border-radius: var(--ww-radius-md);
+  background: var(--ww-color-chrome-surface);
+  color: var(--ww-color-chrome-text);
+  cursor: pointer;
+}
+.preferences-theme-option:hover {
+  background: var(--ww-color-chrome-surface-raised);
+}
+.preferences-theme-option[data-on="true"] {
+  background: var(--ww-color-accent-soft);
+  border-color: var(--ww-color-accent);
+  color: var(--ww-color-accent-deep);
+}
+
+.preferences-accent-swatches {
+  display: flex;
+  gap: var(--ww-space-sm2);
+}
+
+.preferences-accent-swatch {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--ww-radius-pill);
+  border: 1px solid rgba(var(--ww-shadow-rgb), 0.25);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+.preferences-accent-swatch[data-accent-swatch="orange"] {
+  background: var(--ww-color-accent-orange);
+}
+.preferences-accent-swatch[data-accent-swatch="teal"] {
+  background: var(--ww-color-accent-teal);
+}
+.preferences-accent-swatch[data-accent-swatch="graphite"] {
+  background: var(--ww-color-accent-graphite);
+}
+.preferences-accent-swatch[data-accent-swatch="blue"] {
+  background: var(--ww-color-accent-blue);
+}

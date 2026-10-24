@@ -1,0 +1,104 @@
+/*
+ * Shared "floating chrome" recipe for the grid picker, hover chip, and
+ * context menu — ported from design/Wordwright.dc.html's table popovers,
+ * using the same border/radius/shadow recipe already established by
+ * .link-modal in toolbar.css.
+ */
+
+.table-popover {
+  position: fixed;
+  z-index: 60;
+  background: var(--ww-color-chrome-surface);
+  border: 1px solid var(--ww-color-chrome-border-strong);
+  border-radius: var(--ww-radius-lg);
+  box-shadow: 0 12px 28px rgba(var(--ww-shadow-rgb), 0.16);
+  padding: var(--ww-space-md);
+}
+
+/* ---- grid picker ---- */
+
+.table-grid-picker {
+  display: grid;
+  grid-template-columns: repeat(8, 18px);
+  gap: 2px;
+}
+
+.table-grid-cell {
+  border: 1px solid var(--ww-color-chrome-border-subtle);
+  background: var(--ww-color-chrome-surface);
+  padding: 0;
+  height: 16px;
+  cursor: pointer;
+}
+.table-grid-cell[data-sel="true"] {
+  background: var(--ww-color-accent-soft);
+  border-color: var(--ww-color-accent);
+}
+
+.table-grid-label {
+  margin-top: var(--ww-space-sm2);
+  font-size: var(--ww-font-size-xs2);
+  color: var(--ww-color-chrome-text-muted);
+  text-align: center;
+}
+
+/* ---- hover chip ---- */
+
+.table-hover-chip {
+  position: fixed;
+  z-index: 55;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 var(--ww-space-sm2);
+  border: 1px solid var(--ww-color-chrome-border-strong);
+  border-radius: var(--ww-radius-pill);
+  background: var(--ww-color-chrome-surface);
+  box-shadow: 0 2px 6px rgba(var(--ww-shadow-rgb), 0.12);
+  font: inherit;
+  font-size: var(--ww-font-size-xs);
+  color: var(--ww-color-chrome-text);
+  cursor: pointer;
+}
+.table-hover-chip:hover {
+  background: var(--ww-color-chrome-surface-raised);
+}
+
+/* ---- context menu ---- */
+
+.table-context-menu {
+  z-index: 70;
+  min-width: 206px;
+  display: flex;
+  flex-direction: column;
+  padding: var(--ww-space-xs);
+}
+
+.table-menu-item {
+  display: flex;
+  align-items: center;
+  height: 28px;
+  width: 100%;
+  padding: 0 var(--ww-space-sm2);
+  border: none;
+  border-radius: var(--ww-radius-md);
+  background: none;
+  font: inherit;
+  font-size: var(--ww-font-size-sm2);
+  color: var(--ww-color-chrome-text);
+  text-align: left;
+  cursor: pointer;
+}
+.table-menu-item:hover {
+  background: var(--ww-color-chrome-surface-raised);
+}
+.table-menu-item[data-danger="true"] {
+  color: var(--ww-color-danger-text);
+}
+
+.table-menu-divider {
+  height: 1px;
+  background: var(--ww-color-chrome-border);
+  margin: var(--ww-space-xs) 0;
+}

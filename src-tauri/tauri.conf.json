@@ -1,0 +1,64 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Wordwright",
+  "version": "1.0.0",
+  "identifier": "com.wordwright.app",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Wordwright",
+        "width": 1024,
+        "height": 700,
+        "decorations": true
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' asset: https://asset.localhost data:"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "fileAssociations": [
+      {
+        "ext": ["md", "markdown"],
+        "name": "Markdown Document",
+        "description": "Markdown Document",
+        "role": "Editor",
+        "mimeType": "text/markdown"
+      }
+    ],
+    "resources": {
+      "../icons/macos/document/WordwrightMarkdown.icns": "WordwrightMarkdown.icns",
+      "../icons/windows/wordwright-markdown.ico": "wordwright-markdown.ico"
+    },
+    "windows": {
+      "nsis": {
+        "installerHooks": "windows/document-icon-hook.nsh",
+        "installerIcon": "icons/icon.ico",
+        "uninstallerIcon": "icons/icon.ico"
+      }
+    }
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDUzM0M5MTg5RkM1QjcwNDIKUldSQ2NGdjhpWkU4VTVwZU5CQkJ2dnV6ZTJoUDlTdDJjc0dZeFBOMit4eTgvdTRuV0tKckYvOGkK",
+      "endpoints": [
+        "https://github.com/matthewriley/wordwright/releases/latest/download/latest.json"
+      ]
+    }
+  }
+}

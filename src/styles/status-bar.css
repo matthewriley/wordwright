@@ -1,0 +1,24 @@
+/*
+ * Ported from design/Wordwright.dc.html's status bar row.
+ */
+
+.status-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--ww-space-lg);
+  height: 26px;
+  padding: 0 var(--ww-space-md2);
+  background: var(--ww-color-chrome-surface-raised);
+  border-top: 1px solid var(--ww-color-chrome-border);
+  flex: none;
+  font-size: var(--ww-font-size-xs2);
+  color: var(--ww-color-chrome-text-muted);
+}
+
+.status-bar-spacer {
+  flex: 1;
+}
+
+.status-bar-divider {
+  color: var(--ww-color-chrome-text-faintest);
+}

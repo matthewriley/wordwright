@@ -1,0 +1,53 @@
+[package]
+name = "wordwright"
+version = "1.0.0"
+description = "A lightweight markdown editor for macOS and Windows"
+authors = ["Matt Riley"]
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+# The `_lib` suffix may seem redundant but it is necessary
+# to make the lib name unique and wouldn't conflict with the bin name.
+# This seems to be only an issue on Windows, see https://github.com/rust-lang/cargo/issues/8519
+name = "wordwright_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+# Registered first in the builder chain (lib.rs) — its own docs note this
+# matters, since it needs to intercept a second launch before other
+# plugins' setup work runs in that doomed second process.
+tauri-plugin-single-instance = "2"
+tauri-plugin-opener = "2"
+tauri-plugin-dialog = "2"
+tauri-plugin-fs = "2"
+tauri-plugin-os = "2"
+# native-tls, not the default rustls: rustls pulls in ring, whose build
+# requires clang on aarch64-pc-windows-msvc — absent on the test VM (and
+# most Windows machines). native-tls rides each OS's own TLS stack
+# (Schannel / Security Framework) and compiles no C code at all.
+tauri-plugin-updater = { version = "2", default-features = false, features = ["native-tls", "system-proxy", "zip"] }
+# Only here for relaunch() after the updater installs — the "restart to
+# apply" half of the update flow.
+tauri-plugin-process = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# Disables WebView2's own reserved "browser accelerator keys" (Ctrl+F/
+# Ctrl+P/F5/etc. — Chrome-style shortcuts that don't make sense inside an
+# embedded desktop UI). Needs the raw WebView2 COM settings object, which
+# isn't exposed through Tauri's own API surface (lib.rs's setup hook).
+[target.'cfg(windows)'.dependencies]
+# Versions must track whatever tauri/wry pull in: lib.rs's setup hook
+# receives types from tauri's webview2-com/windows and casts them through
+# these crates — a version skew between the two sets fails to compile
+# (E0599 on the Interface cast). Pin in lockstep with Cargo.lock's wry
+# entries when bumping tauri.
+webview2-com = "0.39"
+windows = "0.62"
+

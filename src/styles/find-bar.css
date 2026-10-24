@@ -1,0 +1,108 @@
+/*
+ * Floating, non-modal (no backdrop, no focus trap) so the document stays
+ * visible and interactive while searching — unlike the .link-modal-style
+ * <dialog>s, this doesn't block the editor. position: fixed (viewport-
+ * relative), not absolute — .app-scroll is the scrolling container, so an
+ * absolutely-positioned child scrolls along with the document instead of
+ * staying put over it (confirmed live: jumping to a match near the bottom
+ * of a long document scrolled the bar out of view above the viewport).
+ * top offset clears the toolbar (~41px) + tab strip (32px) stacked above
+ * .app-scroll; no ancestor sets transform/filter/perspective, so fixed
+ * positioning here is relative to the window, not clipped by
+ * .app-scroll's overflow: auto.
+ */
+.find-bar {
+  position: fixed;
+  top: 76px;
+  right: var(--ww-space-lg);
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ww-space-xs);
+  padding: var(--ww-space-sm2);
+  border: 1px solid var(--ww-color-chrome-border-strong);
+  border-radius: var(--ww-radius-lg);
+  background: var(--ww-color-chrome-surface);
+  box-shadow: 0 8px 20px rgba(var(--ww-shadow-rgb), 0.16);
+}
+
+.find-bar-row {
+  display: flex;
+  align-items: center;
+  gap: var(--ww-space-xs);
+}
+
+.find-bar-input {
+  width: 180px;
+  font: inherit;
+  font-size: var(--ww-font-size-sm);
+  color: var(--ww-color-chrome-text-strong);
+  background: var(--ww-color-chrome-surface);
+  border: 1px solid var(--ww-color-chrome-border-strong);
+  border-radius: var(--ww-radius-md);
+  padding: var(--ww-space-xs) var(--ww-space-sm2);
+}
+
+.find-bar-count {
+  min-width: 64px;
+  font-size: var(--ww-font-size-xs);
+  color: var(--ww-color-chrome-text-muted);
+  white-space: nowrap;
+}
+
+.find-bar-icon-button {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  border-radius: var(--ww-radius-md);
+  background: none;
+  color: var(--ww-color-chrome-text);
+  cursor: pointer;
+}
+.find-bar-icon-button:hover:not(:disabled) {
+  background: var(--ww-color-chrome-surface-raised);
+  border-color: var(--ww-color-chrome-border);
+}
+.find-bar-icon-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.find-bar-case-toggle {
+  height: 24px;
+  padding: 0 var(--ww-space-sm);
+  font-size: var(--ww-font-size-xs);
+  font-weight: 600;
+  border: 1px solid var(--ww-color-chrome-border-strong);
+  border-radius: var(--ww-radius-md);
+  background: var(--ww-color-chrome-surface);
+  color: var(--ww-color-chrome-text);
+  cursor: pointer;
+}
+.find-bar-case-toggle[data-on="true"] {
+  background: var(--ww-color-accent-soft);
+  border-color: var(--ww-color-accent);
+  color: var(--ww-color-accent-deep);
+}
+
+.find-bar-text-button {
+  height: 24px;
+  padding: 0 var(--ww-space-sm2);
+  font: inherit;
+  font-size: var(--ww-font-size-xs);
+  border: 1px solid var(--ww-color-chrome-border-strong);
+  border-radius: var(--ww-radius-md);
+  background: var(--ww-color-chrome-surface);
+  color: var(--ww-color-chrome-text);
+  cursor: pointer;
+}
+.find-bar-text-button:hover:not(:disabled) {
+  background: var(--ww-color-chrome-surface-raised);
+}
+.find-bar-text-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}

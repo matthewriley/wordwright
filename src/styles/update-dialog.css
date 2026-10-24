@@ -1,0 +1,36 @@
+/*
+ * Update dialog. Reuses .link-modal's border/radius/shadow/backdrop
+ * (toolbar.css) rather than inventing new modal chrome — .update-dialog
+ * only adds the body layout and the download progress bar.
+ */
+.update-dialog {
+  min-width: 340px;
+}
+
+.update-dialog-body {
+  margin: 0 0 var(--ww-space-lg);
+  font-size: var(--ww-font-size-sm);
+  color: var(--ww-color-chrome-text);
+}
+.update-dialog-body p {
+  margin: 0;
+}
+
+.update-dialog-progress {
+  height: 6px;
+  border-radius: var(--ww-radius-pill);
+  background: var(--ww-color-chrome-surface-raised);
+  border: 1px solid var(--ww-color-chrome-border-strong);
+  overflow: hidden;
+  margin-bottom: var(--ww-space-sm2);
+}
+.update-dialog-progress-fill {
+  height: 100%;
+  background: var(--ww-color-accent);
+  transition: width 120ms ease-out;
+}
+/* No Content-Length from the server: full-width fill in accent-soft as a
+ * quiet "working" hint rather than a fake percentage. */
+.update-dialog-progress-fill[data-indeterminate="true"] {
+  background: var(--ww-color-accent-soft);
+}

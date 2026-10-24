@@ -1,0 +1,171 @@
+/*
+ * Wordwright design tokens.
+ * Extracted from the Claude Design export (design/Wordwright.dc.html).
+ * Nothing outside this file should reference a raw hex value — always
+ * `var(--ww-*)` — so a future dark-mode pass can be additive, not a refactor.
+ */
+
+:root {
+  color-scheme: light;
+
+  /* ---- chrome palette (warm neutrals — the app's own UI chrome) ---- */
+  --ww-color-chrome-bg: #ECE9E6;
+  --ww-color-chrome-surface: #FFFFFF;
+  --ww-color-chrome-surface-raised: #F6F4F2;
+  --ww-color-chrome-border: #E2DEDA;
+  --ww-color-chrome-border-strong: #D8D4D1;
+  --ww-color-chrome-border-subtle: #DFDBD7;
+  --ww-color-chrome-text: #3A3536;
+  --ww-color-chrome-text-strong: #231F20;
+  --ww-color-chrome-text-muted: #6F635A;
+  --ww-color-chrome-text-faint: #908985;
+  --ww-color-chrome-text-faintest: #B2B2B2;
+
+  /* Fixed, not accent-derived — destructive actions (e.g. "Delete table")
+     must read as danger regardless of which of the four accent swatches is
+     selected. This happens to equal the export's orange accent-deep by
+     coincidence; don't collapse it back into --ww-color-accent-deep. */
+  --ww-color-danger-text: #9E4F36;
+
+  /* shadow base as an RGB triple so both popup shadow opacities can share it */
+  --ww-shadow-rgb: 35, 31, 32;
+
+  /* ---- document surface palette (GitHub-markdown style, editor content) ---- */
+  --ww-color-doc-text: #1f2328;
+  --ww-color-doc-text-muted: #59636e;
+  --ww-color-doc-border: #d1d9e0;
+  --ww-color-doc-surface-muted: #f6f8fa;
+  --ww-color-doc-link: #0969da;
+  --ww-color-doc-code-inline-bg: #818b981f;
+
+  /* ---- accent palette (user-configurable, 4 fixed swatches — see #008) ---- */
+  --ww-color-accent-orange: #CC6C4D;
+  --ww-color-accent-orange-soft: #F6E4DB;
+  --ww-color-accent-orange-deep: #9E4F36;
+
+  --ww-color-accent-teal: #117A7A;
+  --ww-color-accent-teal-soft: #DFEEEE;
+  --ww-color-accent-teal-deep: #0B5555;
+
+  --ww-color-accent-graphite: #57504E;
+  --ww-color-accent-graphite-soft: #E9E6E5;
+  --ww-color-accent-graphite-deep: #3A3534;
+
+  --ww-color-accent-blue: #0969DA;
+  --ww-color-accent-blue-soft: #DCE9FB;
+  --ww-color-accent-blue-deep: #08488F;
+
+  /* active accent (--ww-color-accent/-soft/-deep) is set below, by the
+     [data-accent="…"] re-pointer rules — not hardcoded here, now that
+     Milestone 8's accent picker exists. */
+
+  /* ---- spacing scale ---- */
+  --ww-space-xs: 4px;
+  --ww-space-sm: 6px;
+  --ww-space-sm2: 8px;
+  --ww-space-md: 10px;
+  --ww-space-md2: 12px;
+  --ww-space-lg: 16px;
+  --ww-space-xl: 24px;
+  --ww-space-2xl: 40px;
+  --ww-space-3xl: 48px;
+
+  /* ---- radius scale ---- */
+  --ww-radius-sm: 3px;
+  --ww-radius-md: 4px;
+  --ww-radius-lg: 6px;
+  --ww-radius-pill: 11px;
+
+  /* ---- font-size scale (chrome UI; doc-surface headings stay em-relative) ---- */
+  --ww-font-size-2xs: 10px;
+  --ww-font-size-xs: 11px;
+  --ww-font-size-xs2: 11.5px;
+  --ww-font-size-sm: 12px;
+  --ww-font-size-sm2: 12.5px;
+  --ww-font-size-md: 14px;
+  --ww-font-size-lg: 15px;
+  --ww-font-size-xl: 16px;
+}
+
+/*
+ * Dark theme — applied by preferences.ts setting data-theme="dark" on
+ * <html> (never via a media query directly, so an explicit Light choice
+ * can override a dark OS even when System mode also exists). Color
+ * tokens only; spacing/radius/font-size are theme-independent. Chrome
+ * stays "warm dark" (charcoal/brown-black) rather than cold slate, to
+ * keep the same warm-neutral character as the light chrome palette. Doc
+ * surface mirrors GitHub's own dark markdown theme, the same relationship
+ * the light doc palette already has to GitHub's light theme. Accent base
+ * hues are unchanged from light (so the 4 picker swatches always look the
+ * same); only each swatch's soft/deep — background washes and emphasis
+ * variants — get theme-appropriate values, since light pastel washes
+ * don't read correctly on a dark surface.
+ */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --ww-color-chrome-bg: #1E1B1A;
+  --ww-color-chrome-surface: #292524;
+  --ww-color-chrome-surface-raised: #322D2C;
+  --ww-color-chrome-border: #3D3735;
+  --ww-color-chrome-border-strong: #4A4341;
+  --ww-color-chrome-border-subtle: #352F2E;
+  --ww-color-chrome-text: #E4DFDC;
+  --ww-color-chrome-text-strong: #FAF7F5;
+  --ww-color-chrome-text-muted: #A89D96;
+  --ww-color-chrome-text-faint: #7D726C;
+  --ww-color-chrome-text-faintest: #5C5451;
+
+  --ww-color-danger-text: #E2896B;
+
+  --ww-shadow-rgb: 0, 0, 0;
+
+  --ww-color-doc-text: #E6EDF3;
+  --ww-color-doc-text-muted: #848D97;
+  --ww-color-doc-border: #3D444D;
+  --ww-color-doc-surface-muted: #151B23;
+  --ww-color-doc-link: #4493F8;
+  --ww-color-doc-code-inline-bg: #6E768166;
+
+  --ww-color-accent-orange-soft: #46301F;
+  --ww-color-accent-orange-deep: #E7A688;
+
+  --ww-color-accent-teal-soft: #163636;
+  --ww-color-accent-teal-deep: #6FC9C9;
+
+  --ww-color-accent-graphite-soft: #3A3634;
+  --ww-color-accent-graphite-deep: #C9C2BE;
+
+  --ww-color-accent-blue-soft: #163254;
+  --ww-color-accent-blue-deep: #78B0F5;
+}
+
+/*
+ * Active accent re-pointer — applied by preferences.ts setting
+ * data-accent="<swatch>" on <html>. Unconditional (same in both themes):
+ * each rule just re-points the 3 generic --ww-color-accent* variables at
+ * the selected swatch's own tokens, which already resolve to the correct
+ * light/dark values via the block above. Defaults to orange if the
+ * attribute is ever absent, matching the pre-Milestone-8 hardcoded value.
+ */
+:root,
+:root[data-accent="orange"] {
+  --ww-color-accent: var(--ww-color-accent-orange);
+  --ww-color-accent-soft: var(--ww-color-accent-orange-soft);
+  --ww-color-accent-deep: var(--ww-color-accent-orange-deep);
+}
+:root[data-accent="teal"] {
+  --ww-color-accent: var(--ww-color-accent-teal);
+  --ww-color-accent-soft: var(--ww-color-accent-teal-soft);
+  --ww-color-accent-deep: var(--ww-color-accent-teal-deep);
+}
+:root[data-accent="graphite"] {
+  --ww-color-accent: var(--ww-color-accent-graphite);
+  --ww-color-accent-soft: var(--ww-color-accent-graphite-soft);
+  --ww-color-accent-deep: var(--ww-color-accent-graphite-deep);
+}
+:root[data-accent="blue"] {
+  --ww-color-accent: var(--ww-color-accent-blue);
+  --ww-color-accent-soft: var(--ww-color-accent-blue-soft);
+  --ww-color-accent-deep: var(--ww-color-accent-blue-deep);
+}

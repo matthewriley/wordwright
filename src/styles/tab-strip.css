@@ -1,0 +1,69 @@
+/*
+ * Ported from design/Wordwright.dc.html's tab strip, replacing raw hex
+ * with tokens from tokens.css. The active-tab inset top border is a new
+ * visual pattern not used elsewhere yet (existing toggle buttons swap
+ * background/color via [data-on="true"] instead), but reuses the same
+ * data-attribute convention.
+ */
+
+.tab-strip {
+  display: flex;
+  align-items: stretch;
+  gap: 2px;
+  height: 32px;
+  padding: 0 var(--ww-space-sm2);
+  background: var(--ww-color-chrome-bg);
+  border-bottom: 1px solid var(--ww-color-chrome-border);
+  flex: none;
+}
+
+.tab {
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  color: var(--ww-color-chrome-text);
+  font: inherit;
+  font-size: var(--ww-font-size-sm);
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  gap: var(--ww-space-sm2);
+  cursor: pointer;
+}
+.tab[data-tab="true"] {
+  background: var(--ww-color-chrome-surface);
+  box-shadow: inset 0 2px 0 var(--ww-color-accent);
+}
+
+.tab-name {
+  white-space: nowrap;
+}
+
+.tab-dirty-dot {
+  font-size: 14px;
+  color: var(--ww-color-accent);
+}
+
+.tab-close {
+  display: flex;
+  align-items: center;
+  color: var(--ww-color-chrome-text-faint);
+  border-radius: var(--ww-radius-sm);
+}
+.tab-close:hover {
+  background: var(--ww-color-chrome-border);
+  color: var(--ww-color-chrome-text-strong);
+}
+
+.tab-new {
+  border: none;
+  background: none;
+  color: var(--ww-color-chrome-text-muted);
+  font-size: 15px;
+  padding: 0 10px;
+  cursor: pointer;
+  flex: none;
+}
+.tab-new:hover {
+  color: var(--ww-color-chrome-text-strong);
+}
