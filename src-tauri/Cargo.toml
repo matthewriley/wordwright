@@ -1,6 +1,6 @@
 [package]
 name = "wordwright"
-version = "1.0.0"
+version = "1.0.1"
 description = "A lightweight markdown editor for macOS and Windows"
 authors = ["Matt Riley"]
 edition = "2021"

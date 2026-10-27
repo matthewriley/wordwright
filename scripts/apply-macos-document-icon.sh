@@ -23,9 +23,14 @@
 #
 # Both point at WordwrightMarkdown.icns, already bundled via
 # tauri.conf.json's bundle.resources into Contents/Resources/. Re-signs
-# ad-hoc afterward, since editing Info.plist after Tauri's own bundling
-# step invalidates whatever signature it already applied.
+# afterward, since editing Info.plist after Tauri's own bundling step
+# invalidates whatever signature it already applied. The re-sign must
+# use the real Developer ID identity AND the hardened runtime
+# (--options runtime) to match what tauri build applied and to stay
+# notarizable — an ad-hoc re-sign here would silently strip both.
 set -euo pipefail
+
+SIGNING_IDENTITY="${SIGNING_IDENTITY:-Developer ID Application: MATTHEW WARREN RILEY (7A5V462NL5)}"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # Optional first argument: path to a different Wordwright.app (e.g. one
@@ -61,6 +66,6 @@ PB=/usr/libexec/PlistBuddy
 "$PB" -c "Add :UTExportedTypeDeclarations:0:UTTypeTagSpecification:public.filename-extension:0 string md" "$PLIST"
 "$PB" -c "Add :UTExportedTypeDeclarations:0:UTTypeTagSpecification:public.filename-extension:1 string markdown" "$PLIST"
 
-codesign --force --deep -s - "$APP"
+codesign --force --deep --options runtime -s "$SIGNING_IDENTITY" "$APP"
 
 echo "Document icon + exported UTI ($UTI) wired up, app re-signed: $APP"

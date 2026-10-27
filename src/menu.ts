@@ -10,7 +10,7 @@ import { newTab, openFile, requestCloseTab, saveFile, saveFileAs } from "./file-
 import { checkForUpdates } from "./updater";
 
 const APP_NAME = "Wordwright";
-const ABOUT_METADATA = { name: APP_NAME, version: "1.0.0" };
+const ABOUT_METADATA = { name: APP_NAME, version: "1.0.1" };
 
 // Built once on startup (App.tsx) via Menu.setAsAppMenu() — not
 // setAsWindowMenu(), which is unsupported on macOS. Undo/Redo/Select All

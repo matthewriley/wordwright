@@ -1,7 +1,7 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "Wordwright",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "identifier": "com.wordwright.app",
   "build": {
     "beforeDevCommand": "npm run dev",
@@ -51,6 +51,9 @@
         "installerIcon": "icons/icon.ico",
         "uninstallerIcon": "icons/icon.ico"
       }
+    },
+    "macOS": {
+      "signingIdentity": "Developer ID Application: MATTHEW WARREN RILEY (7A5V462NL5)"
     }
   },
   "plugins": {
