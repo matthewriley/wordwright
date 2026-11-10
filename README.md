@@ -60,6 +60,16 @@ npm run tauri build    # produce a native installer/app bundle
 npm test               # Vitest
 ```
 
+On macOS, `tauri build` and the document-icon post-build step
+(`npm run build:macos-doc-icon`) default to the maintainer's Developer
+ID signing identity, which only exists in their keychain. For a local
+build, sign ad-hoc instead (or substitute your own Developer ID):
+
+```bash
+npm run tauri build -- --config '{"bundle":{"macOS":{"signingIdentity":"-"}}}'
+SIGNING_IDENTITY=- npm run build:macos-doc-icon
+```
+
 The editor is [ProseMirror](https://prosemirror.net) with a custom
 `markdown-it`-backed parser/serializer for round-tripping
 GitHub-flavored markdown; the shell is [Tauri v2](https://v2.tauri.app)
