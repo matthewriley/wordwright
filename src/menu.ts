@@ -8,9 +8,13 @@ import { openFindBar } from "./editor/FindBar";
 import { openPreferences } from "./editor/PreferencesModal";
 import { newTab, openFile, requestCloseTab, saveFile, saveFileAs } from "./file-operations";
 import { checkForUpdates } from "./updater";
+// package.json is the release's version of record (the bump commit sets
+// it alongside tauri.conf.json/Cargo.toml) — importing it here keeps the
+// About box off the list of files a release has to remember to bump.
+import { version } from "../package.json";
 
 const APP_NAME = "Wordwright";
-const ABOUT_METADATA = { name: APP_NAME, version: "1.0.1" };
+const ABOUT_METADATA = { name: APP_NAME, version };
 
 // Built once on startup (App.tsx) via Menu.setAsAppMenu() — not
 // setAsWindowMenu(), which is unsupported on macOS. Undo/Redo/Select All

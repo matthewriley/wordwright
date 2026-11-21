@@ -32,9 +32,18 @@ below); nothing under `src-tauri/` should be edited directly.
     independent of which app is set as the default "Open With" handler).
     The script also adds a full `UTExportedTypeDeclarations` entry
     exporting Wordwright's own UTI (`app.wordwright.markdown`) with its
-    own icon, so it can actually compete for the icon the same way. Also
-    re-signs the app ad-hoc, since editing `Info.plist` post-bundle
-    invalidates Tauri's own signature.
+    own icon, so it can actually compete for the icon the same way. Then
+    re-signs the app, since editing `Info.plist` post-bundle invalidates
+    Tauri's own signature. The re-sign uses the maintainer's Developer ID
+    identity plus the hardened runtime (matching what `tauri build`
+    applied, so the bundle stays notarizable — an ad-hoc re-sign would
+    silently strip both). That identity only exists in the maintainer's
+    keychain; anyone else building from source must override it, either
+    with their own Developer ID or ad-hoc for a local build:
+    `SIGNING_IDENTITY=- npm run build:macos-doc-icon`. The same override
+    is needed one step earlier, since `tauri.conf.json`'s
+    `bundle.macOS.signingIdentity` carries the same default:
+    `npm run tauri build -- --config '{"bundle":{"macOS":{"signingIdentity":"-"}}}'`.
   - **Windows (NSIS)**: `bundle.resources` places
     `windows/wordwright-markdown.ico` directly in `$INSTDIR`, and
     `src-tauri/windows/document-icon-hook.nsh` (wired via

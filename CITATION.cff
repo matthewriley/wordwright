@@ -5,7 +5,7 @@ type: software
 authors:
   - family-names: Riley
     given-names: Matt
-version: 1.0.0
-date-released: "2026-09-06"
+version: 1.0.1
+date-released: "2026-10-27"
 license: MIT
 repository-code: "https://github.com/matthewriley/wordwright"

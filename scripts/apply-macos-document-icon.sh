@@ -32,6 +32,28 @@ set -euo pipefail
 
 SIGNING_IDENTITY="${SIGNING_IDENTITY:-Developer ID Application: MATTHEW WARREN RILEY (7A5V462NL5)}"
 
+# Preflight: a Developer ID certificate only exists in its owner's
+# keychain, so the default identity is unusable on any machine but the
+# maintainer's. Fail BEFORE the PlistBuddy edits below — they invalidate
+# the app's signature, so a codesign failure at the end would leave the
+# app unlaunchable. Override with your own Developer ID, or `-` for an
+# ad-hoc local build (tauri.conf.json's bundle.macOS.signingIdentity has
+# the same default — override it the same way at the tauri build step).
+if [ "$SIGNING_IDENTITY" != "-" ] && \
+   ! security find-identity -v -p codesigning | grep -qF "$SIGNING_IDENTITY"; then
+  cat >&2 <<EOF
+error: signing identity not found in this machine's keychain:
+  $SIGNING_IDENTITY
+
+That Developer ID belongs to Wordwright's maintainer. To build locally,
+re-run with your own Developer ID identity or an ad-hoc signature:
+
+  SIGNING_IDENTITY="Developer ID Application: Your Name (TEAMID)" $0
+  SIGNING_IDENTITY=- $0
+EOF
+  exit 1
+fi
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # Optional first argument: path to a different Wordwright.app (e.g. one
 # mounted inside a read-write-converted .dmg, when patching the shipped
