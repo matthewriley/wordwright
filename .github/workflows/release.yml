@@ -596,7 +596,10 @@ jobs:
         run: |
           set -euo pipefail
           tag="$GITHUB_REF_NAME"
-          test "$tag" = "v$VERSION" || { echo "::error::not a release tag: $tag"; exit 1; }
+          case "$tag" in
+            "v$VERSION"|"v$VERSION"-*) ;;
+            *) echo "::error::not a release tag: $tag"; exit 1 ;;
+          esac
           # A hyphenated tag (v1.0.2-rc1) is a prerelease: it never becomes
           # releases/latest, so a validation run can't be offered to users.
           prerelease=()
