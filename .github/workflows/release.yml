@@ -80,10 +80,16 @@ jobs:
           test "$(jq -r .version src-tauri/tauri.conf.json)" = "$version"
           grep -q "^version = \"$version\"\$" src-tauri/Cargo.toml
           if [ "$GITHUB_REF_TYPE" = "tag" ]; then
-            test "$GITHUB_REF_NAME" = "v$version" || {
-              echo "::error::tag $GITHUB_REF_NAME does not match package.json version $version"
-              exit 1
-            }
+            # Exact release tag, or a prerelease of the same version
+            # (v1.0.2-rc1) — used to validate the release job without
+            # publishing to users, since hyphenated tags become prereleases.
+            case "$GITHUB_REF_NAME" in
+              "v$version"|"v$version"-*) ;;
+              *)
+                echo "::error::tag $GITHUB_REF_NAME does not match package.json version $version"
+                exit 1
+                ;;
+            esac
           fi
           echo "version=$version" >> "$GITHUB_OUTPUT"
 
