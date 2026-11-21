@@ -149,6 +149,12 @@ jobs:
 
       - name: Build (unsigned dry run)
         if: env.SIGNING != 'true'
+        env:
+          # Tauri's APPLE_SIGNING_IDENTITY env var wins over the config
+          # value, so the workflow-level Developer ID has to be overridden
+          # here too, not just in --config. Without this the dry run tries
+          # to sign with a certificate no runner has.
+          APPLE_SIGNING_IDENTITY: "-"
         run: >-
           npm run tauri build --
           --config '{"bundle":{"macOS":{"signingIdentity":"-"},"createUpdaterArtifacts":false}}'
