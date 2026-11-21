@@ -15,6 +15,11 @@
 # The Windows ZIPs are built from the already-signed installer and then
 # Tauri-signed, so the updater never ships an unsigned exe.
 #
+# Artifacts are staged in `release-dist/`, never `dist/`: `dist` is the
+# Vite output directory, so a build leaves index.html and assets/ there and
+# they would be uploaded alongside the installers (caught in Stage 2 —
+# `gh release upload ... dist/*/*` would then try to upload a directory).
+#
 # Required environment `release` secrets (Stage 3):
 #   APPLE_CERTIFICATE_P12_B64   Developer ID .p12, base64, no line wraps
 #   APPLE_CERTIFICATE_PASSWORD  .p12 export password
@@ -253,18 +258,18 @@ jobs:
       - name: Collect release files
         run: |
           set -euo pipefail
-          mkdir -p dist
-          cp src-tauri/target/release/bundle/dmg/*.dmg dist/
+          mkdir -p release-dist
+          cp src-tauri/target/release/bundle/dmg/*.dmg release-dist/
           if compgen -G "src-tauri/target/release/bundle/macos/*.app.tar.gz" > /dev/null; then
-            cp src-tauri/target/release/bundle/macos/*.app.tar.gz dist/
-            cp src-tauri/target/release/bundle/macos/*.app.tar.gz.sig dist/
+            cp src-tauri/target/release/bundle/macos/*.app.tar.gz release-dist/
+            cp src-tauri/target/release/bundle/macos/*.app.tar.gz.sig release-dist/
           fi
-          ls -l dist
+          ls -l release-dist
 
       - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
         with:
           name: macos
-          path: dist/*
+          path: release-dist/*
           if-no-files-found: error
 
       - name: Attest signed macOS artifacts
@@ -272,9 +277,9 @@ jobs:
         uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a # v3
         with:
           subject-path: |
-            dist/*.dmg
-            dist/*.app.tar.gz
-            dist/*.app.tar.gz.sig
+            release-dist/*.dmg
+            release-dist/*.app.tar.gz
+            release-dist/*.app.tar.gz.sig
 
   windows-x64:
     name: Windows x64 build, sign
@@ -352,10 +357,10 @@ jobs:
         run: |
           $exe = Get-ChildItem "src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis/*-setup.exe" |
             Select-Object -First 1
-          New-Item -ItemType Directory -Force dist | Out-Null
-          $zip = "dist/Wordwright_${env:VERSION}_x64-setup.nsis.zip"
+          New-Item -ItemType Directory -Force release-dist | Out-Null
+          $zip = "release-dist/Wordwright_${env:VERSION}_x64-setup.nsis.zip"
           python -c "import sys, zipfile, os; z = zipfile.ZipFile(sys.argv[2], 'w', zipfile.ZIP_STORED); z.write(sys.argv[1], os.path.basename(sys.argv[1])); z.close()" $exe.FullName $zip
-          Copy-Item $exe.FullName dist/
+          Copy-Item $exe.FullName release-dist/
 
       - name: Tauri-sign the updater zip
         if: env.SIGNING == 'true'
@@ -364,7 +369,7 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ""
         shell: pwsh
         run: |
-          Get-ChildItem dist/*.nsis.zip | ForEach-Object {
+          Get-ChildItem release-dist/*.nsis.zip | ForEach-Object {
             npx tauri signer sign $_.FullName
             if ($LASTEXITCODE -ne 0) { throw "signing failed: $($_.Name)" }
           }
@@ -373,22 +378,22 @@ jobs:
         if: env.SIGNING != 'true'
         shell: pwsh
         run: |
-          New-Item -ItemType Directory -Force dist | Out-Null
+          New-Item -ItemType Directory -Force release-dist | Out-Null
           $exe = Get-ChildItem "src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis/*-setup.exe" |
             Select-Object -First 1
-          Copy-Item $exe.FullName dist/
+          Copy-Item $exe.FullName release-dist/
 
       - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
         with:
           name: windows-x64
-          path: dist/*
+          path: release-dist/*
           if-no-files-found: error
 
       - name: Attest signed Windows x64 artifacts
         if: env.SIGNING == 'true'
         uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a # v3
         with:
-          subject-path: dist/*
+          subject-path: release-dist/*
 
   windows-arm64:
     name: Windows arm64 build
@@ -478,9 +483,9 @@ jobs:
           $exe = Get-ChildItem "unsigned/*-setup.exe" | Select-Object -First 1
           $sig = Get-AuthenticodeSignature $exe.FullName
           if ($sig.Status -ne "Valid") { throw "invalid signature: $($sig.Status)" }
-          New-Item -ItemType Directory -Force dist | Out-Null
-          Copy-Item $exe.FullName dist/
-          $zip = "dist/Wordwright_${env:VERSION}_arm64-setup.nsis.zip"
+          New-Item -ItemType Directory -Force release-dist | Out-Null
+          Copy-Item $exe.FullName release-dist/
+          $zip = "release-dist/Wordwright_${env:VERSION}_arm64-setup.nsis.zip"
           python -c "import sys, zipfile, os; z = zipfile.ZipFile(sys.argv[2], 'w', zipfile.ZIP_STORED); z.write(sys.argv[1], os.path.basename(sys.argv[1])); z.close()" $exe.FullName $zip
           npx tauri signer sign $zip
           if ($LASTEXITCODE -ne 0) { throw "signing failed" }
@@ -488,13 +493,13 @@ jobs:
       - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
         with:
           name: windows-arm64
-          path: dist/*
+          path: release-dist/*
           if-no-files-found: error
 
       - name: Attest signed Windows arm64 artifacts
         uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a # v3
         with:
-          subject-path: dist/*
+          subject-path: release-dist/*
 
   sbom:
     name: SBOMs
@@ -547,29 +552,29 @@ jobs:
       - uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5
         with:
           name: macos
-          path: dist/macos
+          path: release-dist/macos
       - uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5
         with:
           name: windows-x64
-          path: dist/windows-x64
+          path: release-dist/windows-x64
       - uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5
         with:
           name: windows-arm64
-          path: dist/windows-arm64
+          path: release-dist/windows-arm64
       - uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5
         with:
           name: sbom
-          path: dist/sbom
+          path: release-dist/sbom
 
       - name: Build latest.json
         run: |
           set -euo pipefail
           ./scripts/generate-latest-json.sh "$VERSION" \
-            "darwin-aarch64=dist/macos/Wordwright.app.tar.gz.sig" \
-            "windows-x86_64=dist/windows-x64/Wordwright_${VERSION}_x64-setup.nsis.zip.sig" \
-            "windows-aarch64=dist/windows-arm64/Wordwright_${VERSION}_arm64-setup.nsis.zip.sig" \
-            > dist/latest.json
-          jq . dist/latest.json
+            "darwin-aarch64=release-dist/macos/Wordwright.app.tar.gz.sig" \
+            "windows-x86_64=release-dist/windows-x64/Wordwright_${VERSION}_x64-setup.nsis.zip.sig" \
+            "windows-aarch64=release-dist/windows-arm64/Wordwright_${VERSION}_arm64-setup.nsis.zip.sig" \
+            > release-dist/latest.json
+          jq . release-dist/latest.json
 
       - name: Extract release notes from CHANGELOG
         run: |
@@ -591,7 +596,7 @@ jobs:
               --title "Wordwright $VERSION" --notes-file "$RUNNER_TEMP/notes.md"
 
       - name: Upload release assets
-        run: gh release upload "$GITHUB_REF_NAME" dist/latest.json dist/*/* --clobber
+        run: gh release upload "$GITHUB_REF_NAME" release-dist/latest.json release-dist/*/* --clobber
 
       - name: Publish the release
         run: gh release edit "$GITHUB_REF_NAME" --draft=false
