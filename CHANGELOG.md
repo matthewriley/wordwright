@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Release builds now run in CI on the public repo, which builds, signs,
+- Release builds now run on GitHub Actions, which builds, signs,
   notarizes, and publishes each artifact with SLSA Build L2 provenance and
   a CycloneDX SBOM per platform. Verify any download with
   `gh attestation verify <file> --repo matthewriley/wordwright`.

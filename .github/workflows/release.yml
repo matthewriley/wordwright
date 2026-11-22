@@ -1,8 +1,5 @@
 # Release build, signing, attestation, and publication for Wordwright.
 #
-# Runs on the PUBLIC repo (github.com/matthewriley/wordwright) — this file is
-# published there by publish/publish.sh. The private repo has no Actions.
-#
 # Triggers:
 #   - push of a v* tag: full signed release (build -> sign -> notarize ->
 #     attest -> draft release -> publish)
