@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { Editor } from "./editor/Editor";
 import { SourceView } from "./editor/SourceView";
@@ -20,7 +20,6 @@ import { buildAppMenu } from "./menu";
 import "./App.css";
 
 function App() {
-  const [linkModalOpen, setLinkModalOpen] = useState(false);
   const { filePath, isDirty } = useDocumentMeta();
   useTabs(); // subscribes App.tsx to tab add/remove/switch so the <Editor> list below re-renders
   const activeTabId = useActiveTabId();
@@ -97,7 +96,7 @@ function App() {
 
   return (
     <div className="app">
-      <Toolbar onRequestLink={() => setLinkModalOpen(true)} />
+      <Toolbar />
       <TabStrip />
       <div className="app-scroll">
         <div className="app-page">
@@ -107,7 +106,6 @@ function App() {
               tab={tab}
               initialDoc={tab.initialDoc}
               active={tab.id === activeTabId}
-              onRequestLink={() => setLinkModalOpen(true)}
             />
           ))}
           <SourceView />
@@ -115,7 +113,7 @@ function App() {
         <FindBar />
       </div>
       <StatusBar />
-      <LinkModal open={linkModalOpen} onClose={() => setLinkModalOpen(false)} />
+      <LinkModal />
       <ConfirmDiscardModal />
       <PreferencesModal />
       <UpdateDialog />

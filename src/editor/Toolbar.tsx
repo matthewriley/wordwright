@@ -22,13 +22,20 @@ import {
 } from "lucide-react";
 import { setBlockType, toggleMark } from "prosemirror-commands";
 import { undo, redo } from "prosemirror-history";
+import { platform } from "@tauri-apps/plugin-os";
 import { schema } from "./schema";
 import { run, tabManager, useEditorState, useSourceMode } from "./store";
 import { blockActive, insertHorizontalRule, insertImagePlaceholder, listActive, markActive, toggleBlockType, toggleList, toggleWrap } from "./commands";
+import { formatShortcutTitle } from "./format-shortcuts";
+import { openLinkModal } from "./LinkModal";
 import { TableGridPicker } from "./TableGridPicker";
 import { openFindBar } from "./FindBar";
 import { newTab, openFile, saveFile } from "../file-operations";
 import "../styles/toolbar.css";
+
+// Spec 008: tooltips name the chord the same way the Format menu does, so
+// the toolbar can teach the shortcut without a separate cheat sheet.
+const isMacOS = platform() === "macos";
 
 interface ToolbarButtonProps {
   title: string;
@@ -63,11 +70,7 @@ function currentBlockValue(state: ReturnType<typeof useEditorState>): string {
   return parent.type === schema.nodes.heading ? `h${parent.attrs.level}` : "p";
 }
 
-export interface ToolbarProps {
-  onRequestLink: () => void;
-}
-
-export function Toolbar({ onRequestLink }: ToolbarProps) {
+export function Toolbar() {
   const state = useEditorState();
   const sourceMode = useSourceMode();
 
@@ -94,7 +97,7 @@ export function Toolbar({ onRequestLink }: ToolbarProps) {
 
       <select
         className="toolbar-select"
-        title="Block style"
+        title={`Block style (${isMacOS ? "⌘1–⌘3 are headings 1–3" : "Ctrl+1–Ctrl+3 are headings 1–3"})`}
         value={currentBlockValue(state)}
         disabled={sourceMode}
         onChange={(e) => setBlock(e.target.value)}
@@ -111,28 +114,28 @@ export function Toolbar({ onRequestLink }: ToolbarProps) {
       <Divider />
 
       <ToolbarButton
-        title="Bold"
+        title={formatShortcutTitle("bold", isMacOS)}
         icon={Bold}
         active={!!state && markActive(state, schema.marks.strong)}
         disabled={sourceMode}
         onClick={() => run(toggleMark(schema.marks.strong))}
       />
       <ToolbarButton
-        title="Italic"
+        title={formatShortcutTitle("italic", isMacOS)}
         icon={Italic}
         active={!!state && markActive(state, schema.marks.em)}
         disabled={sourceMode}
         onClick={() => run(toggleMark(schema.marks.em))}
       />
       <ToolbarButton
-        title="Strikethrough"
+        title={formatShortcutTitle("strikethrough", isMacOS)}
         icon={Strikethrough}
         active={!!state && markActive(state, schema.marks.strikethrough)}
         disabled={sourceMode}
         onClick={() => run(toggleMark(schema.marks.strikethrough))}
       />
       <ToolbarButton
-        title="Inline code"
+        title={formatShortcutTitle("inline-code", isMacOS)}
         icon={Code}
         active={!!state && markActive(state, schema.marks.code)}
         disabled={sourceMode}
@@ -142,21 +145,21 @@ export function Toolbar({ onRequestLink }: ToolbarProps) {
       <Divider />
 
       <ToolbarButton
-        title="Bullet list"
+        title={formatShortcutTitle("bullet-list", isMacOS)}
         icon={List}
         active={!!state && listActive(state, schema.nodes.bullet_list)}
         disabled={sourceMode}
         onClick={() => run(toggleList(schema.nodes.bullet_list, schema.nodes.list_item))}
       />
       <ToolbarButton
-        title="Numbered list"
+        title={formatShortcutTitle("ordered-list", isMacOS)}
         icon={ListOrdered}
         active={!!state && listActive(state, schema.nodes.ordered_list)}
         disabled={sourceMode}
         onClick={() => run(toggleList(schema.nodes.ordered_list, schema.nodes.list_item))}
       />
       <ToolbarButton
-        title="Task list"
+        title={formatShortcutTitle("task-list", isMacOS)}
         icon={ListChecks}
         active={!!state && listActive(state, schema.nodes.task_list)}
         disabled={sourceMode}
@@ -166,14 +169,14 @@ export function Toolbar({ onRequestLink }: ToolbarProps) {
       <Divider />
 
       <ToolbarButton
-        title="Blockquote"
+        title={formatShortcutTitle("blockquote", isMacOS)}
         icon={Quote}
         active={!!state && blockActive(state, schema.nodes.blockquote)}
         disabled={sourceMode}
         onClick={() => run(toggleWrap(schema.nodes.blockquote))}
       />
       <ToolbarButton
-        title="Code block"
+        title={formatShortcutTitle("code-block", isMacOS)}
         icon={SquareCode}
         active={!!state && blockActive(state, schema.nodes.code_block)}
         disabled={sourceMode}
@@ -182,7 +185,7 @@ export function Toolbar({ onRequestLink }: ToolbarProps) {
 
       <Divider />
 
-      <ToolbarButton title="Link" icon={Link} disabled={sourceMode} onClick={onRequestLink} />
+      <ToolbarButton title={formatShortcutTitle("link", isMacOS)} icon={Link} disabled={sourceMode} onClick={() => openLinkModal()} />
       <ToolbarButton title="Image" icon={Image} disabled={sourceMode} onClick={() => run(insertImagePlaceholder)} />
       <TableGridPicker disabled={sourceMode} />
       <ToolbarButton title="Horizontal rule" icon={Minus} disabled={sourceMode} onClick={() => run(insertHorizontalRule)} />

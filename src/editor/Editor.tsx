@@ -6,6 +6,7 @@ import { schema } from "./schema";
 import { buildPlugins } from "./plugins";
 import { TaskItemView } from "./task-item-view";
 import { type Document, useSourceMode } from "./store";
+import { openLinkModal } from "./LinkModal";
 import { TableHoverChip } from "./TableHoverChip";
 import { TableContextMenu } from "./TableContextMenu";
 import "../styles/editor.css";
@@ -27,7 +28,6 @@ export interface EditorProps {
   tab: Document;
   initialDoc: PMNode;
   active: boolean;
-  onRequestLink: () => void;
 }
 
 // Rendered once per open tab (key={tab.id} at the call site), so each gets
@@ -38,7 +38,7 @@ export interface EditorProps {
 // switches, and avoids having to coherently swap node views/plugins on
 // every switch. Named `tab`, not `document` — the latter would shadow the
 // global `window.document`.
-export function Editor({ tab, initialDoc, active, onRequestLink }: EditorProps) {
+export function Editor({ tab, initialDoc, active }: EditorProps) {
   const mountRef = useRef<HTMLDivElement>(null);
   const sourceMode = useSourceMode();
   const [chip, setChip] = useState<TableChipState | null>(null);
@@ -80,7 +80,7 @@ export function Editor({ tab, initialDoc, active, onRequestLink }: EditorProps) 
         // doesn't belong in plugins.ts's ProseMirror keymap.
         handleKeyDown(_view, event) {
           if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
-            onRequestLink();
+            openLinkModal();
             return true;
           }
           return false;

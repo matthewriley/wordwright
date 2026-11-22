@@ -1,4 +1,4 @@
-import { Menu, Submenu } from "@tauri-apps/api/menu";
+import { Menu, Submenu, type MenuItemOptions, type PredefinedMenuItemOptions } from "@tauri-apps/api/menu";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { platform } from "@tauri-apps/plugin-os";
 import { undo, redo } from "prosemirror-history";
@@ -6,6 +6,8 @@ import { selectAll } from "prosemirror-commands";
 import { run, tabManager } from "./editor/store";
 import { openFindBar } from "./editor/FindBar";
 import { openPreferences } from "./editor/PreferencesModal";
+import { FORMAT_SHORTCUTS } from "./editor/format-shortcuts";
+import { runFormatAction } from "./editor/format-actions";
 import { newTab, openFile, requestCloseTab, saveFile, saveFileAs } from "./file-operations";
 import { checkForUpdates } from "./updater";
 // package.json is the release's version of record (the bump commit sets
@@ -101,6 +103,30 @@ export async function buildAppMenu(): Promise<void> {
     ],
   });
 
+  // Spec 008. One item per formatting action, grouped the way the toolbar
+  // groups them, with a separator where the group changes. On macOS these
+  // accelerators are real (the native menu key equivalent fires before the
+  // keydown reaches the webview, the same way Edit > Undo works); on Windows
+  // the labels are documentation only and keyboard-shortcuts.ts does the
+  // work — see the long comment at the top of that file.
+  const formatItems: (MenuItemOptions | PredefinedMenuItemOptions)[] = [];
+  let formatGroup: string | null = null;
+  for (const shortcut of FORMAT_SHORTCUTS) {
+    if (formatGroup !== null && shortcut.group !== formatGroup) formatItems.push({ item: "Separator" });
+    formatGroup = shortcut.group;
+    formatItems.push({
+      id: `format-${shortcut.id}`,
+      text: shortcut.label,
+      accelerator: shortcut.accelerator,
+      // Source-mode and no-document cases are handled inside
+      // runFormatAction — a menu item can't be conditionally disabled
+      // without rebuilding the whole menu on every state change.
+      action: () => runFormatAction(shortcut.id),
+    });
+  }
+
+  const formatMenu = await Submenu.new({ text: "Format", items: formatItems });
+
   const viewMenu = await Submenu.new({
     text: "View",
     // No app-level menu exists on Windows to host Preferences (unlike
@@ -135,7 +161,9 @@ export async function buildAppMenu(): Promise<void> {
   });
 
   const menu = await Menu.new({
-    items: appMenu ? [appMenu, fileMenu, editMenu, viewMenu, helpMenu] : [fileMenu, editMenu, viewMenu, helpMenu],
+    items: appMenu
+      ? [appMenu, fileMenu, editMenu, formatMenu, viewMenu, helpMenu]
+      : [fileMenu, editMenu, formatMenu, viewMenu, helpMenu],
   });
   await menu.setAsAppMenu();
 }

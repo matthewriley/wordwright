@@ -21,15 +21,19 @@ export function blockActive(state: EditorState, nodeType: NodeType, attrs: Attrs
 }
 
 // blockActive only sees the immediate parent block (paragraph, heading,
-// blockquote, code_block) — list membership lives further up the tree
-// (paragraph -> list_item -> bullet_list/ordered_list/task_list), so list
-// buttons need an ancestor walk instead.
-export function listActive(state: EditorState, listType: NodeType): boolean {
+// code_block) — list membership lives further up the tree (paragraph ->
+// list_item -> bullet_list/ordered_list/task_list), so list buttons need an
+// ancestor walk instead.
+function ancestorActive(state: EditorState, nodeType: NodeType): boolean {
   const { $from } = state.selection;
   for (let depth = $from.depth; depth > 0; depth--) {
-    if ($from.node(depth).type === listType) return true;
+    if ($from.node(depth).type === nodeType) return true;
   }
   return false;
+}
+
+export function listActive(state: EditorState, listType: NodeType): boolean {
+  return ancestorActive(state, listType);
 }
 
 // Toggle-style wrappers so list/blockquote/code-block toolbar buttons turn
@@ -44,7 +48,10 @@ export function toggleList(listType: NodeType, itemType: NodeType): Command {
 
 export function toggleWrap(nodeType: NodeType): Command {
   return (state, dispatch, view) => {
-    if (blockActive(state, nodeType)) return lift(state, dispatch, view);
+    // Ancestor walk, not blockActive: a blockquote's parent is the paragraph
+    // *inside* it, so the immediate-parent check never reports an existing
+    // blockquote as active and the toggle would nest instead of unwrapping.
+    if (ancestorActive(state, nodeType)) return lift(state, dispatch, view);
     return wrapIn(nodeType)(state, dispatch, view);
   };
 }

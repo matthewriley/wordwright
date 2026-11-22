@@ -59,6 +59,10 @@ permissions:
 
 env:
   CARGO_TERM_COLOR: always
+  # Also in package.json `engines` and .nvmrc. Keep them in step: CI builds
+  # the shipped artifacts, so it must match local dev (Node 24 = Maintenance
+  # LTS until 2028-04; move to 26 when Vite 8/Vitest 5 land).
+  NODE_VERSION: 24
   APPLE_SIGNING_IDENTITY: "Developer ID Application: MATTHEW WARREN RILEY (7A5V462NL5)"
   AZURE_TS_ENDPOINT: "https://wus3.codesigning.azure.net/"
   AZURE_TS_ACCOUNT: "wordwright-signing"
@@ -116,7 +120,7 @@ jobs:
 
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
-          node-version: 22
+          node-version: ${{ env.NODE_VERSION }}
           cache: npm
 
       - uses: dtolnay/rust-toolchain@df2a88e9fe4098bad09cb42c3dec7187f15861fc # master
@@ -305,7 +309,7 @@ jobs:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
-          node-version: 22
+          node-version: ${{ env.NODE_VERSION }}
           cache: npm
       - uses: dtolnay/rust-toolchain@df2a88e9fe4098bad09cb42c3dec7187f15861fc # master
         with:
@@ -411,7 +415,7 @@ jobs:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
-          node-version: 22
+          node-version: ${{ env.NODE_VERSION }}
           cache: npm
       - uses: dtolnay/rust-toolchain@df2a88e9fe4098bad09cb42c3dec7187f15861fc # master
         with:
@@ -443,7 +447,7 @@ jobs:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
-          node-version: 22
+          node-version: ${{ env.NODE_VERSION }}
           cache: npm
       - run: npm ci
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v5
@@ -519,7 +523,7 @@ jobs:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
-          node-version: 22
+          node-version: ${{ env.NODE_VERSION }}
           cache: npm
       - uses: dtolnay/rust-toolchain@df2a88e9fe4098bad09cb42c3dec7187f15861fc # master
         with:

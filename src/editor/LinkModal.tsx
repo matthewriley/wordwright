@@ -1,14 +1,58 @@
-import { useEffect, useRef, useState, type FormEvent, type MouseEvent } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore, type FormEvent, type MouseEvent } from "react";
 import { schema } from "./schema";
 import { tabManager } from "./store";
 import "../styles/toolbar.css";
 
-export interface LinkModalProps {
-  open: boolean;
-  onClose: () => void;
+// Same imperative-controller shape as FindBar/PreferencesModal — this needs
+// to be openable from menu.ts (the Format menu's Link… item) and from
+// keyboard-shortcuts.ts, neither of which is a React context. It used to be
+// prop-driven from App.tsx, which worked only because the toolbar and the
+// editor were the only triggers; spec 008 adds two more call sites outside
+// React.
+class LinkModalController {
+  private open = false;
+  private listeners = new Set<() => void>();
+
+  show(): void {
+    this.open = true;
+    this.notify();
+  }
+
+  hide(): void {
+    this.open = false;
+    this.notify();
+  }
+
+  private notify(): void {
+    this.listeners.forEach((listener) => listener());
+  }
+
+  subscribe = (listener: () => void): (() => void) => {
+    this.listeners.add(listener);
+    return () => this.listeners.delete(listener);
+  };
+
+  getSnapshot = (): boolean => this.open;
 }
 
-export function LinkModal({ open, onClose }: LinkModalProps) {
+const controller = new LinkModalController();
+
+export function openLinkModal(): void {
+  const activeDocument = tabManager.activeDocument();
+  // A collapsed caret at a word boundary is fine — handleSubmit inserts the
+  // URL text when the selection is empty — but with no editor, or in source
+  // mode where the toolbar also disables the Link button, there is nothing
+  // to insert into and the modal would collect input for nothing.
+  if (!activeDocument?.view || activeDocument.sourceMode) return;
+  controller.show();
+}
+
+export function closeLinkModal(): void {
+  controller.hide();
+}
+
+export function LinkModal() {
+  const open = useSyncExternalStore(controller.subscribe, controller.getSnapshot);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [url, setUrl] = useState("https://");
   const [title, setTitle] = useState("");
@@ -39,15 +83,15 @@ export function LinkModal({ open, onClose }: LinkModalProps) {
       view.dispatch(tr);
       view.focus();
     }
-    onClose();
+    controller.hide();
   }
 
   function handleBackdropClick(event: MouseEvent<HTMLDialogElement>) {
-    if (event.target === dialogRef.current) onClose();
+    if (event.target === dialogRef.current) controller.hide();
   }
 
   return (
-    <dialog ref={dialogRef} className="link-modal" onClose={onClose} onCancel={onClose} onClick={handleBackdropClick}>
+    <dialog ref={dialogRef} className="link-modal" onCancel={() => controller.hide()} onClick={handleBackdropClick}>
       <form className="link-modal-form" onSubmit={handleSubmit}>
         <h2>Insert link</h2>
         <label>
@@ -59,7 +103,7 @@ export function LinkModal({ open, onClose }: LinkModalProps) {
           <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} />
         </label>
         <div className="link-modal-actions">
-          <button type="button" onClick={onClose}>
+          <button type="button" onClick={() => controller.hide()}>
             Cancel
           </button>
           <button type="submit">Insert</button>
